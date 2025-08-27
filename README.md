@@ -10,6 +10,7 @@ Transaction Data: Provides a granular breakdown of financial activity, including
 User Data: Consists of demographic attributes, in-app usage statistics, and preference indicators. It enables detailed profiling and segmentation, helping to assess engagement levels, predict user behavior, and identify opportunities for personalization.
 
 Insurance Data: Covers end-to-end insurance interactions, such as policy purchases and premium contributions. It supports evaluation of market adoption, risk exposure, and evolving consumer needs within the insurance landscape.
+
 Ways to Visualize Data
 
 Interactive Dashboards
