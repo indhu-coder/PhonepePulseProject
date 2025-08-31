@@ -3,8 +3,6 @@ import pymysql
 import sys, os
 from urllib.request import urlopen
 import streamlit as st
-
-
 # Get the parent folder (pulse/)
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -29,13 +27,6 @@ try:
     db_name = 'Phonepe_Pulse'
     use_database(cursor, db_name) # Function calling 
 
-
-        
-    # st.set_page_config(page_title="Map", page_icon="India", layout="wide")
-   
-
-
-    # state_options = st.selectbox("Select State", Agg_state_list, index=0, label_visibility="collapsed")
     with urlopen("https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson") as response:
         jsonfile = json.load(response)
 
@@ -350,15 +341,9 @@ try:
         # Display inside Streamlit app (auto responsive)
         st.plotly_chart(fig_map_6, use_container_width=True)
 
-    
-        
-
-  
-    
-  
-
 except Exception as e:
     print('Error:', e)
+
 
 
 
