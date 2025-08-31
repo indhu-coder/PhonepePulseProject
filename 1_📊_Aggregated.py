@@ -29,20 +29,13 @@ try:
         index=0)
     if add_radio == "Users":
         st.subheader('Registered user Behaviour Analysis-Year wise')
-        
         fetch_query = f'''SELECT State,Year, max(reg_user)as Highest_reg_user 
         FROM aggregated_user 
-         
         GROUP BY State,Year      
-        ORDER BY Highest_reg_user DESC limit 10 
-        '''
+        ORDER BY Highest_reg_user DESC limit 10 '''
         df_agg_user1= pd.read_sql_query(fetch_query, connection)
-        # st.bar_chart(df_agg_user1, x='Year', y='Highest_reg_user', use_container_width=True)
         fig1 = px.bar(df_agg_user1, x='Year', y='Highest_reg_user', color='State',width=400, height=500)
         st.plotly_chart(fig1, use_container_width=True)
-
-        
-
         st.subheader('Registered users Brand Analysis-State wise')
         state_options = st.selectbox("Select State", df_agg_user['State'], index=0, label_visibility="collapsed")
         selected_year = st.selectbox("Choose a year",[2018,2019,2020, 2021, 2022, 2023,2024],index=0,label_visibility="collapsed",) 
@@ -121,3 +114,4 @@ try:
 except Exception as e:
 
     print('error = ', e)
+
