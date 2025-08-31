@@ -7,47 +7,31 @@ import streamlit as st
 # This script processes aggregated transaction data from the PhonePe Pulse dataset.
 path="C:/Users/Indhu/phonepe/pulse/data/aggregated/insurance/country/india/state"
 Agg_state_list=os.listdir(path)
-#print('Agg_state_list = ', Agg_state_list) # The list Agg_state_list contains the names of states in India for which transaction data is available.
-
-#Creating a dataframe for the aggregated transaction data
-
 clm={'State':[], 'Year':[],'Quarter':[], 'Insurance_count':[], 'Insurance_amount':[]}
 
 for state in Agg_state_list:
-    #print ('Processing state:', state)
-#    p_i=path+i+"/"
     Agg_yr=os.listdir(os.path.join(path, state)) #To get a list of all files and directories within that joined constructed path.
-    #print('Agg_yr = ', Agg_yr)  # The list Agg_yr contains the years for which transaction data is available for the state.
     for j in Agg_yr:
-        #print('Processing year:', j)
-#         p_j=p_i+j+"/"
         Agg_quarter_list=os.listdir(os.path.join(path, state, j))
-        #print('Agg_quarter_list = ', Agg_quarter_list)
         for k in Agg_quarter_list:
-#             p_k=p_j+k
             with open(os.path.join(path, state, j, k), 'r') as Data:
         
                 D=json.load(Data) # Load the JSON data from the file
-                #print('Processing quarter:', k)
-                #print('Data loaded for state:', State, 'year:', j, 'quarter:', k)
-                # Extracting transaction data from the loaded JSON  
+                  # Extracting transaction data from the loaded JSON  
                 for z in D['data']['transactionData']:
                     Name = z['name']
                     count = z['paymentInstruments'][0]['count']
                     amount = z['paymentInstruments'][0]['amount']
-                    
                     clm['Insurance_count'].append(count)
                     clm['Insurance_amount'].append(amount)
                     clm['State'].append(state)
                     clm['State'] = [state.replace('-', ' ').title() for state in clm['State']]  # Formatting state names
-                    
                     clm['Year'].append(j)
                     clm['Quarter'].append(int(k.strip('.json')))
 
 # Succesfully created a dataframe
 df_agg_insurance=pd.DataFrame(clm)
-# print(df_agg_insurance.head())  # Display the first few rows of the DataFrame
-# print(df_agg_insurance.columns)
+
 
 # Function definitions for MySQL database operations
 @st.cache_resource
@@ -96,25 +80,21 @@ try:
     cursor = connection.cursor() 
 # Creating a database if it does not exist
     db_name = 'Phonepe_Pulse'
-    #create_database(cursor, connection, db_name)  
+    create_database(cursor, connection, db_name)  
 # Using the created database
-    # use_database(cursor, db_name) # Function calling
+    use_database(cursor, db_name) # Function calling
 # Creating a table in the database
     table_name = 'Aggregated_Insurance'
     table_type_declaration = "(State VARCHAR(50), Year INT, Quarter INT,Insurance_count INT, Insurance_amount BIGINT)"
-    # creation_of_table(cursor, connection, table_name, table_type_declaration) # Function calling
+    creation_of_table(cursor, connection, table_name, table_type_declaration) # Function calling
 # Insert data into the table
     table_insert_declaration = "(State,Year,Quarter,Insurance_count,Insurance_amount) VALUES (%s,%s,%s,%s,%s)"
     value_to_be_inserted = (df_agg_insurance['State'], df_agg_insurance['Year'], df_agg_insurance['Quarter'], df_agg_insurance['Insurance_count'], df_agg_insurance['Insurance_amount'])  # Convert DataFrame columns to list of tuples
     value_to_be_inserted = list(zip(*value_to_be_inserted))  # Transpose the list of tuples
-    #print("values_to_be_inserted = ", value_to_be_inserted) 
-    # response=insertion_table(cursor, connection, table_name, table_insert_declaration, value_to_be_inserted) #Function calling  
-    # print("response = ", response)
+    response=insertion_table(cursor, connection, table_name, table_insert_declaration, value_to_be_inserted) #Function calling  
+    print("response = ", response)
 except Exception as e:
         print(f"Error: {e}")
 
-# groupby operations on the DataFrame
-# df.groupby(['Year']).first()  # Grouping the DataFrame by 'State' and displaying the first entry for
-# print(df.groupby(['State','Year','Quarter','Transaction_type']).agg({'Transaction_count':['sum'],'Transaction_amount':['sum']}))# Display the first few rows of the DataFrame
 
         
