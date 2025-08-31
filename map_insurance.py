@@ -10,7 +10,6 @@ path_1="C:/Users/Indhu/phonepe/pulse/data/map/insurance/hover/country/india/stat
 Agg_state_list=os.listdir(path)
 Agg_state_list1=os.listdir(path_1)
 
-#print('Agg_state_list = ', Agg_state_list) # The list Agg_state_list contains the names of states in India for which transaction data is available.
 
 #Creating a dataframe for the aggregated transaction data
 
@@ -18,61 +17,36 @@ clm={'State':[], 'Year':[],'Quarter':[],'latitude':[], 'longitude':[],'metric':[
 clm1={'State':[], 'Year':[],'Quarter':[],'District':[], 'Insurance_count':[],'Insurance_amount':[]}
 
 for state in Agg_state_list:
-    #print ('Processing state:', state)
-#    p_i=path+i+"/"
     Agg_yr=os.listdir(os.path.join(path, state)) #To get a list of all files and directories within that joined constructed path.
-    #print('Agg_yr = ', Agg_yr)  # The list Agg_yr contains the years for which transaction data is available for the state.
     for j in Agg_yr:
-        #print('Processing year:', j)
-#         p_j=p_i+j+"/"
         Agg_quarter_list=os.listdir(os.path.join(path, state, j))
-        #print('Agg_quarter_list = ', Agg_quarter_list)
         for k in Agg_quarter_list:
-#             p_k=p_j+k
             with open(os.path.join(path, state, j, k), 'r') as Data:
-        
-                D=json.load(Data) # Load the JSON data from the file
-                # print('Processing quarter:', k)
-                # print('Data loaded for state:', State, 'year:', j, 'quarter:', k)
+                 D=json.load(Data) # Load the JSON data from the file
+           
                 # Extracting transaction data from the loaded JSON
                 try:
                     pack_list= [x for x in D['data']['data']['data']] #packing of list of values from the file
                     for latitude,longitude,metric,district in pack_list: #unpacking to the respective columns from the list
-                        #print(pack_list) # unpacking of list
                         clm['latitude'].append(latitude)
                         clm['longitude'].append(longitude)
                         clm['metric'].append(metric)
                         clm['district'].append(district)
-                        
                         clm['State'].append(state)
-                        # clm['State'] = [state.replace('&', ' ').title() for state in clm['State']] 
-                        # clm['State'] = [state.replace('-', ' ').title() for state in clm['State']] 
-                        # clm['State'] = re.sub(r'[^a-zA-Z0-9]', '', state)
+                        clm['State'] = [state.replace('-', ' ').title() for state in clm['State']] 
                         clm['Year'].append(j)
                         clm['Quarter'].append(int(k.strip('.json')))
-                        #print(clm['latitude'])
                         
                 except Exception as e:
                     print('error=',e)
 for state in Agg_state_list1:
-    # print ('Processing state:', state)
-#    p_i=path+i+"/"
-    Agg_yr=os.listdir(os.path.join(path_1, state)) #To get a list of all files and directories within that joined constructed path.
-    #print('Agg_yr = ', Agg_yr)  # The list Agg_yr contains the years for which transaction data is available for the state.
+     Agg_yr=os.listdir(os.path.join(path_1, state)) #To get a list of all files and directories within that joined constructed path.
     for a in Agg_yr:
-        #print('Processing year:', j)
-#         p_j=p_i+j+"/"
         Agg_quarter_list=os.listdir(os.path.join(path_1, state, a))
-        #print('Agg_quarter_list = ', Agg_quarter_list)
         for b in Agg_quarter_list:
-#             p_k=p_j+k
             with open(os.path.join(path_1, state, a, b), 'r') as Data_1:
-        
-                D1=json.load(Data_1) # Load the JSON data from the file   
+            D1=json.load(Data_1) # Load the JSON data from the file   
             try:  
-                    
-                    
-                    
                     hover_data = D1["data"]["hoverDataList"]
                     # Extracting the first item from the hoverDataList
                     for x in hover_data:
@@ -84,8 +58,7 @@ for state in Agg_state_list1:
                             clm1['Insurance_count'].append(count)
                             clm1['Insurance_amount'].append(amount)
                             clm1['State'].append(state)
-                            # clm1['State'] = [state.replace('-', ' ').title() for state in clm1['State']]
-                            # clm1['State'] = [state.replace('&', ' ').title() for state in clm['State']]   # Formatting state names
+                            clm1['State'] = [state.replace('-', ' ').title() for state in clm1['State']]
                             clm1['Year'].append(a)
                             clm1['Quarter'].append(int(b.strip('.json')))
             except Exception as e:
@@ -94,7 +67,7 @@ for state in Agg_state_list1:
 # Succesfully created a dataframe
 df_map=pd.DataFrame(clm)
 df_map_insurance=pd.DataFrame(clm1)
-# print(df_map_insurance.head())
+
 
 # Function definitions for MySQL database operations
 @st.cache_resource
@@ -143,28 +116,26 @@ try:
     cursor = connection.cursor() 
 # Creating a database if it does not exist
     db_name = 'Phonepe_Pulse'
-    #create_database(cursor, connection, db_name)  
+    create_database(cursor, connection, db_name)  
 # Using the created database
-    # use_database(cursor, db_name) # Function calling
+    use_database(cursor, db_name) # Function calling
 # Creating a table in the database
-    # table_name = 'Map_location'
+    table_name = 'Map_location'
     table_name1 = 'Map_Insurance'
-    # table_type_declaration = "(State VARCHAR(50), Year INT, Quarter INT, latitude FLOAT,longitude FLOAT,metric FLOAT,district VARCHAR(100))"
+    table_type_declaration = "(State VARCHAR(50), Year INT, Quarter INT, latitude FLOAT,longitude FLOAT,metric FLOAT,district VARCHAR(100))"
     table_type_declaration = "(State VARCHAR(50), Year INT, Quarter INT,District VARCHAR(50), Insurance_count INT, Insurance_amount BIGINT)"
 
-    # creation_of_table(cursor, connection, table_name1,table_type_declaration) # Function calling
+    creation_of_table(cursor, connection, table_name1,table_type_declaration) # Function calling
     # Insert data into the table
     
-    # table_insert_declaration = "(State,Year,Quarter,latitude,longitude,metric,district) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    table_insert_declaration = "(State,Year,Quarter,latitude,longitude,metric,district) VALUES (%s,%s,%s,%s,%s,%s,%s)"
     table_insert_declaration = "(State,Year,Quarter,District,Insurance_count,Insurance_amount) VALUES (%s,%s,%s,%s,%s,%s)"
-
-    # value_to_be_inserted = (df_map['State'], df_map['Year'], df_map['Quarter'], df_map['latitude'], df_map['longitude'], df_map['metric'], df_map['district'])  # Convert DataFrame columns to list of tuples
+    value_to_be_inserted = (df_map['State'], df_map['Year'], df_map['Quarter'], df_map['latitude'], df_map['longitude'], df_map['metric'], df_map['district'])  # Convert DataFrame columns to list of tuples
     value_to_be_inserted = (df_map_insurance['State'], df_map_insurance['Year'], df_map_insurance['Quarter'],df_map_insurance['District'], df_map_insurance['Insurance_count'], df_map_insurance['Insurance_amount'])  # Convert DataFrame columns to list of tuples
-
     value_to_be_inserted = list(zip(*value_to_be_inserted))  # Transpose the list of tuples
-    # #print("values_to_be_inserted = ", value_to_be_inserted) 
-    # response=insertion_table(cursor, connection, table_name1, table_insert_declaration, value_to_be_inserted) #Function calling  
-    # print("response = ", response)
+    response=insertion_table(cursor, connection, table_name1, table_insert_declaration, value_to_be_inserted) #Function calling  
+    print("response = ", response)
 except Exception as e:
         print(f"Error: {e}")
+
 
