@@ -6,71 +6,42 @@ import streamlit as st
 # This script processes aggregated transaction data from the PhonePe Pulse dataset.
 path="C:/Users/Indhu/phonepe/pulse/data/top/transaction/country/india/state"
 Agg_state_list=os.listdir(path)
-#print('Agg_state_list = ', Agg_state_list) # The list Agg_state_list contains the names of states in India for which transaction data is available.
 
 #Creating a dataframe for the aggregated transaction data
 try:
     clm_1={'State':[], 'Year':[],'Quarter':[],'districts':[], 'dist_txn_count':[],'dist_txn_amount':[],'zipcodes':[],'zipcode_txn_count':[],'zipcode_txn_amount':[]}
-   
-
-
     for state in Agg_state_list:
-    #print ('Processing state:', state)
-#    p_i=path+i+"/"
         Agg_yr=os.listdir(os.path.join(path, state)) #To get a list of all files and directories within that joined constructed path.
-    #print('Agg_yr = ', Agg_yr)  # The list Agg_yr contains the years for which transaction data is available for the state.
         for j in Agg_yr:
-        #print('Processing year:', j)
-#         p_j=p_i+j+"/"
             Agg_quarter_list=os.listdir(os.path.join(path, state, j))
-        #print('Agg_quarter_list = ', Agg_quarter_list)
             for k in Agg_quarter_list:
-#             p_k=p_j+k
                 with open(os.path.join(path, state, j, k), 'r') as Data:
         
                     D=json.load(Data) # Load the JSON data from the file
-                #print('Processing quarter:', k)
-                #print('Data loaded for state:', State, 'year:', j, 'quarter:', k)
+              
                 # Extracting transaction data from the loaded JSON
                     for z in D['data']['districts']:
                             districts = z['entityName']
-                            #print(districts)
                             dist_count = z['metric']['count']
-                            #print(dist_count)
                             dist_amount = z['metric']['amount']
                     for x in D['data']['pincodes']:
                             zipcodes = x['entityName']
-                            
                             zipcode_count = x['metric']['count']
-                            
                             zipcode_amount = x['metric']['amount']
-                            #print(dist_amount)
                             clm_1['districts'].append(districts)
                             clm_1['dist_txn_count'].append(dist_count)
                             clm_1['dist_txn_amount'].append(dist_amount)    
                             clm_1['State'].append(state)
                             clm_1['State'] = [state.replace('-', ' ').title() for state in clm_1['State']]
-                            
                             clm_1['Year'].append(j)
                             clm_1['Quarter'].append(int(k.strip('.json')))  
-                          
-                               
-                                          
                             clm_1['zipcodes'].append(zipcodes)
                             clm_1['zipcode_txn_count'].append(zipcode_count)
                             clm_1['zipcode_txn_amount'].append(zipcode_amount)
-                        
-                                                        
-             
-                    
 except Exception as e:
     print('error=',e)
-                  
-
 # Succesfully created a dataframe
 df_1=pd.DataFrame(clm_1)
-
-#print(df_2)
 
 # Function definitions for MySQL database operations
 @st.cache_resource
@@ -119,28 +90,22 @@ try:
     cursor = connection.cursor() 
 # Creating a database if it does not exist
     db_name = 'Phonepe_Pulse'
-    #create_database(cursor, connection, db_name)  
+    create_database(cursor, connection, db_name)  
 # Using the created database
-    # use_database(cursor, db_name) # Function calling
+    use_database(cursor, db_name) # Function calling
 # Creating a table in the database
     table_name = 'Top_Transaction'
     table_type_declaration = "(State VARCHAR(50), Year INT, Quarter INT, districts VARCHAR(100), dist_txn_count BIGINT, dist_txn_amount BIGINT, zipcodes INT, zipcode_txn_count BIGINT, zipcode_txn_amount BIGINT)"
-
-    # creation_of_table(cursor, connection, table_name, table_type_declaration) # Function calling
+    creation_of_table(cursor, connection, table_name, table_type_declaration) # Function calling
 # # Insert data into the table
     table_insert_declaration = "(State,Year,Quarter,districts,dist_txn_count,dist_txn_amount,zipcodes,zipcode_txn_count,zipcode_txn_amount) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-
-    # value_to_be_inserted = (df_1['State'], df_1['Year'], df_1['Quarter'], df_1['districts'], df_1['dist_txn_count'], df_1['dist_txn_amount'], df_1['zipcodes'], df_1['zipcode_txn_count'], df_1['zipcode_txn_amount'])  # Convert DataFrame columns to list of tuples
-
-    # value_to_be_inserted = list(zip(*value_to_be_inserted))  # Transpose the list of tuples
-    # # print("values_to_be_inserted = ", value_to_be_inserted) 
-    # response=insertion_table(cursor, connection, table_name, table_insert_declaration, value_to_be_inserted) #Function calling  
-    # print("response = ", response)
+    value_to_be_inserted = (df_1['State'], df_1['Year'], df_1['Quarter'], df_1['districts'], df_1['dist_txn_count'], df_1['dist_txn_amount'], df_1['zipcodes'], df_1['zipcode_txn_count'], df_1['zipcode_txn_amount'])  # Convert DataFrame columns to list of tuples
+    value_to_be_inserted = list(zip(*value_to_be_inserted))  # Transpose the list of tuples
+    response=insertion_table(cursor, connection, table_name, table_insert_declaration, value_to_be_inserted) #Function calling  
+    print("response = ", response)
 except Exception as e:
         print(f"Error: {e}")
 
-# groupby operations on the DataFrame
-# df.groupby(['Year']).first()  # Grouping the DataFrame by 'State' and displaying the first entry for
-# print(df.groupby(['State','Year','Quarter','districts']).agg({'dist_txn_count':['sum'],'dist_txn_amount':['sum']}))# Display the first few rows of the DataFrame
-#df.info()
+
+
         
