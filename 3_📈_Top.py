@@ -4,21 +4,16 @@ import plotly.express as px
 import sys, os
 
 # Get the parent folder (pulse/)
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from top_insurance import *
-from top_transaction import *
-from top_user import *
-
-import pymysql
-import warnings
-
 # os.path.abspath(__file__) → gives full path of 1_📊_Aggregated.py
 # os.path.dirname() twice → moves up from pages/ to pulse/
 # Adds pulse/ to sys.path
 # Now Python can see agg_insurance.py directly.
-
-
-
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from top_insurance import *
+from top_transaction import *
+from top_user import *
+import pymysql
+import warnings
 warnings.simplefilter(action='ignore', category=UserWarning)
 
 
@@ -129,9 +124,7 @@ try:
             
     # SCENARIO 7
     if add_radio == "Transactions": 
-        # selected_category = st.selectbox(
-        # "Select Category", ["Districts", "Pincodes"], index=0, label_visibility="collapsed")
-        # st.write("You selected:", selected_category)
+    
         selected_year = st.selectbox( "Select Year", [2018, 2019, 2020, 2021, 2022, 2023, 2024], index=0, label_visibility="collapsed")
         selected_quarter = st.selectbox("Select Quarter", [1, 2, 3, 4], index=0, label_visibility="collapsed")
         st.subheader('District level champions in Transactions')
@@ -195,11 +188,7 @@ try:
         # Show in Streamlit
         st.plotly_chart(fig_top_txn2, use_container_width=True)
 
- 
-    
-      
-
-
 
 except Exception as e:
+
     print('error = ', e)
