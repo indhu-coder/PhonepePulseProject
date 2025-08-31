@@ -2,27 +2,16 @@
 import streamlit as st
 import pymysql
 import sys, os
-
 # Get the parent folder (pulse/)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
- 
 from agg_insurance import *
 from agg_transaction import *
 from agg_user import *
-
 import plotly.express as px
 import warnings
-
-
-
-
 warnings.simplefilter(action='ignore', category=UserWarning)
 try:
-    
-
-    # Connection Parameters
+     # Connection Parameters
     connection = pymysql.connect(
          host='localhost', user='root',
          password='12345')        
@@ -33,9 +22,6 @@ try:
   # using the database
     db_name = 'Phonepe_Pulse'
     use_database(cursor, db_name) # Function calling
-
-   
-    
     with st.sidebar:
         add_radio = st.radio(
         "Choose a category",
@@ -108,12 +94,9 @@ try:
                 fig_agg_insurance2 = px.pie(df_agg_insurance2, values='High_insurance_amount', names='District')
                 st.plotly_chart(fig_agg_insurance2, use_container_width=True)
     elif add_radio == 'Transactions':
-            #   
+               
             st.subheader('Transaction Type Analysis-State wise')
             state_options = st.selectbox("Select State", Agg_state_list, index=0, label_visibility="collapsed")
-
-            # selected_year = st.selectbox("Choose a year",[2018,2019,2020, 2021, 2022, 2023,2024],index=0,label_visibility="collapsed",) 
-            # selected_quarter = st.selectbox("Select Quarter", [1, 2, 3, 4], index=0, label_visibility="collapsed")
             fetch_query = f'''SELECT State,Transaction_type,Transaction_count,max(Transaction_amount) as High_Transaction_amount  
             FROM aggregated_transaction 
             WHERE State = '{state_options}'
@@ -133,13 +116,8 @@ try:
             GROUP BY Year,Transaction_type,State
             ORDER BY High_Transaction_amount DESC LIMIT 15'''
             df_agg_transaction2= pd.read_sql_query(fetch_query, connection)
-            # st.bar_chart(source, x="year", y="yield", color="site", stack=False)
             st.bar_chart(df_agg_transaction2, x='State', y='High_Transaction_amount', color = 'Transaction_type',use_container_width=True,stack = False)
               
-
-
-        
-
-       
 except Exception as e:
+
     print('error = ', e)
