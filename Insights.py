@@ -1,7 +1,5 @@
 
 import streamlit as st
-
-
 from agg_insurance import *
 from agg_transaction import *
 from agg_user import *
@@ -11,11 +9,7 @@ from top_user import *
 from map_insurance import *
 from map_transaction import *
 from map_user import *
-
-
 import pymysql
-
-
 
 def using_db(cursor, database_name):
     use_database_query = f"USE {database_name};"
@@ -23,10 +17,6 @@ def using_db(cursor, database_name):
     cursor.execute(use_database_query)
     print("Using Database Successfully")
     connection.commit()
-
-
-
-
 try:
     # Connection Parameters
     connection = pymysql.connect(
@@ -41,16 +31,9 @@ try:
     database_name = 'Phonepe_pulse'
     using_db(cursor, database_name) 
     
-       
+     st.title('PHONEPE PULSE DATA ANALYSIS')
     
     
-   
-    
-    st.title('PHONEPE PULSE DATA ANALYSIS')
-    
-    # st.badge("Users", icon=":material/check:", color="green")
-
-    # st.markdown("":violet-badge[:material/star:'State'] :orange-badge[:material/star:'Districts'] :Green-badge[:material/star:'Pincodes'])
     st.write("This application provides insights into PhonePe Pulse data, including aggregated statistics, maps, and top transactions.")
     st.header("About PhonePe Pulse")
     st.write("""
@@ -77,9 +60,6 @@ try:
         st.write("Demographics, app usage, and preferences")
         st.write("Enables customer profiling, segmentation, and engagement analysis")
 
-
-        
-  
-
 except Exception as e:
+
     print('error = ', e)
