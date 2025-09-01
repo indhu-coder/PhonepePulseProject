@@ -60,7 +60,7 @@ try:
             st.plotly_chart(fig_agg_user, use_container_width=True)
     elif add_radio == "Insurance":
             st.subheader('Insurance Behaviour Analysis-District wise')
-            state_options = st.selectbox("Select State", df_agg_insurance['State'], index=0, label_visibility="collapsed")
+            state_options = st.selectbox("Select State", Agg_state_list, index=0, label_visibility="collapsed")
             fetch_query = f'''SELECT State,Year,District, max(Insurance_amount) as High_insurance_amount 
             FROM map_insurance
             WHERE State = '{state_options}'
@@ -68,7 +68,7 @@ try:
             ORDER BY High_insurance_amount DESC
             LIMIT 10'''
             df_agg_insurance1= pd.read_sql_query(fetch_query, connection)
-            fig_agg_insurance = px.bar(df_agg_insurance1, x = 'Year', y = 'High_insurance_amount', color = 'District', width=400, height=500)
+            fig_agg_insurance = px.bar(df_agg_insurance1, x = 'Year', y = 'High_insurance_amount', color = 'District',labels = 'District', width=400, height=500)
             st.plotly_chart(fig_agg_insurance, use_container_width=True)
 
             st.subheader('Insurance Behaviour Analysis-year wise')
@@ -114,4 +114,5 @@ try:
 except Exception as e:
 
     print('error = ', e)
+
 
