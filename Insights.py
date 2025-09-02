@@ -31,7 +31,7 @@ try:
     database_name = 'Phonepe_pulse'
     using_db(cursor, database_name) 
     
-     st.title('PHONEPE PULSE DATA ANALYSIS')
+    st.title('PHONEPE PULSE DATA ANALYSIS')
     
     
     st.write("This application provides insights into PhonePe Pulse data, including aggregated statistics, maps, and top transactions.")
@@ -63,3 +63,4 @@ try:
 except Exception as e:
 
     print('error = ', e)
+
